@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import pandas as pd
+import utils_math as um
 
 def display_correlation_graph(feature_1_y, feature_2_y):
 	x = np.arange(1, len(feature_1_y) + 1)
@@ -32,12 +33,16 @@ def display_correlation_graph(feature_1_y, feature_2_y):
 	plt.show()
 
 def correlation(data):
-	f1 = data['Astronomy'].sum()
+	f1 = data['Astronomy'].values
 	f2 = data['Defense Against the Dark Arts'].values
-	# np.sum(data)
-	print(f1)
+
+	f1_mean = um.mean_val(f1)
+	f2_mean = um.mean_val(f2)
+
+	# print(um.sum_val(f1))
+	print(f1, f1_mean)
 	print("--------------------------------------------------------------------")
-	print(f2.sum())
+	print(f1 - f1_mean)
 
 def main(): # Astronomy = Defense Against the Dark Arts * -100
 	np.set_printoptions(suppress=True) # Suppress scientific notation
