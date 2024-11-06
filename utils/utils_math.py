@@ -111,14 +111,14 @@ def	describe(data):
         q75.append(percentile_val(numeric_df[column], 0.75))
         maxs.append(max_val(numeric_df[column]))
 
-    # print(f'count : {counts}\n')
-    # print(f'mean : {means}\n')
-    # print(f'std : {stds}\n')
-    # print(f'min : {mins}\n')
+    print(f'count : {counts}\n')
+    print(f'mean : {means}\n')
+    print(f'std : {stds}\n')
+    print(f'min : {mins}\n')
     print(f'25% : {q25}\n')
     print(f'50% : {q50}\n')
     print(f'75% : {q75}\n')
-    # print(f'max : {maxs}\n')
+    print(f'max : {maxs}\n')
     
 
 def main():
