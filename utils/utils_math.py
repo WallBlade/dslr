@@ -43,7 +43,7 @@ def sum_val(arr) -> float:
     for num in arr:
         if mt.isnan(num):
             continue
-        ret += num
+        ret += num[0]
 
     return ret
 
