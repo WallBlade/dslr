@@ -80,31 +80,33 @@ def correlation(data):
 
 	return correlation
 
-def display_all_features_correlation_graph():
-	values = [10, 20, 30, 40, 50]
-	categories = ['A', 'B', 'C', 'D', 'E']
-	tooltip_data = {
-	'A': 'Additional info for bar A',
-	'B': 'Additional info for bar B',
-	'C': 'Additional info for bar C',
-	'D': 'Additional info for bar D',
-	'E': 'Additional info for bar E'
-	}
+def display_all_features_correlation_graph(correlations):
 	
+	values = np.array([item["correlation"] for item in correlations])
+	categories = np.arange(0, len(correlations))
+
+	print(values)
+	print("--------------------------------------------------------------------")
+	print(categories)
+	print("--------------------------------------------------------------------")
+	print(correlations)
+
 	fig, ax = plt.subplots(figsize=(16, 9))
-	ax.axhline(y="10", color='red', linestyle='-', linewidth=2)
-	bars = ax.bar(categories, values)
+	colors = ["red" if value <= -1 else "red" if value >= 1 else "orange" if value <= 0.8 else "blue" for value in values]
+	bars = ax.bar(categories, values, color=colors)
 	
-	mplcursors.cursor(bars, hover=True).connect("add", lambda sel: sel.annotation.set_text(f'Value:'))
+	mplcursors.cursor(bars, hover=True).connect("add", lambda sel: sel.annotation.set_text(f"Correlation between {correlations[sel.index]['feature_1']}\nand {correlations[sel.index]['feature_2']} is {correlations[sel.index]['correlation']}"))
 
 	ax.set_title('Sample Bar Chart')
-	# plt.xlabel('Categories')
-	# plt.ylabel('Values')
+	ax.get_xaxis().set_visible(False)  # Hides the x-axis
+	plt.xlabel('Categories')
+	plt.ylabel('Values')
 
 	# Display the chart
 	plt.show()
 
 def get_features_correlations(data):
+	results = []
 	print(data.corr())
 	print("--------------------------------------------------------------------")
 	print("\t", end="")
@@ -128,9 +130,11 @@ def get_features_correlations(data):
 				print(f"{YELLOW}{corr}{RESET}", end="\t")
 			else:
 				print(f"{corr}", end="\t")
+			results.append({'feature_1': f_1, 'feature_2': f_2, 'correlation': corr})
 
 		print(end="\n")
-	
+	return results
+
 def main(): # Astronomy = Defense Against the Dark Arts * -100
 	np.set_printoptions(suppress=True) # Suppress scientific notation
 	dataset_test = "./datasets/dataset_test.csv"
@@ -141,12 +145,12 @@ def main(): # Astronomy = Defense Against the Dark Arts * -100
 	feature_1_y = data.head(200)['Astronomy'].values
 	feature_2_y = data.head(200)['Defense Against the Dark Arts'].values
 
-	display_all_features_correlation_graph()
-
-	# display_correlation_graph(feature_1_y, feature_2_y)
 	feature_to_compare =	data.drop('Index', axis=1).drop('Hogwarts House', axis=1).drop('First Name', axis=1
 							).drop('Last Name', axis=1).drop('Best Hand', axis=1).drop('Birthday', axis=1)
-	get_features_correlations(feature_to_compare.head(10))
+	correlations = get_features_correlations(feature_to_compare.head(10))
+
+	display_all_features_correlation_graph(correlations)
+	# display_correlation_graph(feature_1_y, feature_2_y)
 
 if __name__ == "__main__":
     main()
