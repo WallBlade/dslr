@@ -64,13 +64,12 @@ def sum_val(arr) -> float:
     """
     if len(arr) == 0:
         raise ValueError("Input array cannot be empty.")
-    
     ret = 0
 
     for num in arr:
-        if mt.isnan(num):
-            continue
-        ret += num
+        # Only add if `num` is a real number
+        if pd.notna(num):
+            ret += num
 
     return ret
 
