@@ -23,8 +23,8 @@ def correlation(data) -> float:
 		raise ValueError("The dataFrame must have 2 columns")
 
 	data = data.dropna()
-	f1 = data.iloc[:, 0:1].values
-	f2 = data.iloc[:, 1:2].values
+	f1 = data.iloc[:, 0:1].values.flatten()
+	f2 = data.iloc[:, 1:2].values.flatten()
 
 	f1_mean = um.mean_val(f1)
 	f2_mean = um.mean_val(f2)
@@ -36,16 +36,16 @@ def correlation(data) -> float:
 	for i in range(len(f1)):
 		if np.isnan(f1[i]) or np.isnan(f2[i]):
 			continue
-		sum1 += (f1[i][0] - f1_mean) * (f2[i][0] - f2_mean)
+		sum1 += (f1[i] - f1_mean) * (f2[i] - f2_mean)
 
 	for num in f1:
-		num = num[0]
+		num = num
 		if np.isnan(num):
 			continue
 		sum2 += (num - f1_mean) ** 2
 
 	for num in f2:
-		num = num[0]
+		num = num
 		if np.isnan(num):
 			continue
 		sum3 += (num - f2_mean) ** 2
