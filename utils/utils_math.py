@@ -70,7 +70,6 @@ def sum_val(arr) -> float:
         # Only add if `num` is a real number
         if pd.notna(num):
             ret += num
-
     return ret
 
 def count_val(arr) -> float:

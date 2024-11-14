@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import mplcursors as mpl
 import matplotlib.pyplot as plt
-from utils import utils_math as mt
+import utils_math as um
 
 def min_max_normalize(column, range_min=0, range_max=1):
     # Calcul des valeurs minimum et maximum dans la colonne
@@ -15,10 +15,10 @@ def min_max_normalize(column, range_min=0, range_max=1):
 def get_score(df, course):
     house_sums = {
         'Course': course,
-        'Gryffindor': mt.sum_val(df[course][df['Hogwarts House'] == 'Gryffindor']),
-        'Hufflepuff': mt.sum_val(df[course][df['Hogwarts House'] == 'Hufflepuff']),
-        'Ravenclaw': mt.sum_val(df[course][df['Hogwarts House'] == 'Ravenclaw']),
-        'Slytherin': mt.sum_val(df[course][df['Hogwarts House'] == 'Slytherin'])
+        'Gryffindor': um.sum_val(df[course][df['Hogwarts House'] == 'Gryffindor']),
+        'Hufflepuff': um.sum_val(df[course][df['Hogwarts House'] == 'Hufflepuff']),
+        'Ravenclaw': um.sum_val(df[course][df['Hogwarts House'] == 'Ravenclaw']),
+        'Slytherin': um.sum_val(df[course][df['Hogwarts House'] == 'Slytherin'])
     }
 
     return house_sums
@@ -47,7 +47,7 @@ def	get_scores(df, houses_scores):
         scores_only = [score for house, score in house_sums.items() if house != 'Course']
 
         # Calculate the mean of all four houses sums
-        course_mean = mt.mean_val(scores_only)
+        course_mean = um.mean_val(scores_only)
 
         # Calculate the divergence score for [course]
         divergence = 0
@@ -77,8 +77,8 @@ def clean_data(data):
     normalized_data = pd.DataFrame()
     for column in numeric_cols:
         column_data = data[column]
-        mean = mt.mean_val(column_data)
-        std = mt.std_val(column_data)
+        mean = um.mean_val(column_data)
+        std = um.std_val(column_data)
         
         # Normalize the column
         normalized_column = min_max_normalize(column_data)

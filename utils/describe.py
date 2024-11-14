@@ -1,4 +1,4 @@
-from utils import utils_math as m
+import utils_math as um
 import pandas as pd
 import sys
 
@@ -37,14 +37,14 @@ def	describe(dataset_file):
         # Remove NaN values before calculating statistics
         column_data = numeric_df[column].dropna().values
         
-        counts.append(m.count_val(column_data))
-        means.append(m.mean_val(column_data))
-        stds.append(m.std_val(column_data))
-        mins.append(m.min_val(column_data))
-        q25.append(m.percentile_val(column_data, 0.25))
-        q50.append(m.percentile_val(column_data, 0.50))
-        q75.append(m.percentile_val(column_data, 0.75))
-        maxs.append(m.max_val(column_data))
+        counts.append(um.count_val(column_data))
+        means.append(um.mean_val(column_data))
+        stds.append(um.std_val(column_data))
+        mins.append(um.min_val(column_data))
+        q25.append(um.percentile_val(column_data, 0.25))
+        q50.append(um.percentile_val(column_data, 0.50))
+        q75.append(um.percentile_val(column_data, 0.75))
+        maxs.append(um.max_val(column_data))
     
     # Store the result of the computed values inside a pandas DataFrame
     # for formatting purpose
