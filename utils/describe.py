@@ -20,10 +20,11 @@ def	describe(dataset_file):
                         corresponds to a numeric column in the input data.
     """
     df = pd.read_csv(dataset_file)
+    df = df.dropna(axis=1, how='all')
 
     numeric_cols = df.select_dtypes(include=['number']).columns
     numeric_df = df[numeric_cols]
-    
+
     counts = []
     means = []
     stds = []
@@ -36,6 +37,8 @@ def	describe(dataset_file):
     for column in numeric_df.columns:
         # Remove NaN values before calculating statistics
         column_data = numeric_df[column].dropna().values
+        if len(column_data) == 0:
+            continue
         
         counts.append(um.count_val(column_data))
         means.append(um.mean_val(column_data))
