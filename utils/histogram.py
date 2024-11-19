@@ -5,11 +5,9 @@ import matplotlib.pyplot as plt
 import utils_math as um
 
 def min_max_normalize(column, range_min=0, range_max=1):
-    # Calcul des valeurs minimum et maximum dans la colonne
     min_val = column.min()
     max_val = column.max()
-    
-    # Normalisation min-max sur une échelle entre range_min et range_max
+
     return [(range_min + (x - min_val) * (range_max - range_min) / (max_val - min_val)) if pd.notna(x) else None for x in column]
 
 def get_score(df, course):
@@ -74,11 +72,10 @@ def clean_data(data):
     sanitized: A DataFrame containing the cleaned dataset.
     '''
     numeric_cols = data.select_dtypes(include=['number']).columns.drop(['Index'])
+    print(numeric_cols)
     normalized_data = pd.DataFrame()
     for column in numeric_cols:
         column_data = data[column]
-        mean = um.mean_val(column_data)
-        std = um.std_val(column_data)
         
         # Normalize the column
         normalized_column = min_max_normalize(column_data)
