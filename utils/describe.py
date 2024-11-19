@@ -61,8 +61,8 @@ def	describe(dataset_file):
         '75%': q75,
         'max': maxs,
     }, index=numeric_cols).T
-    
-    print(describe_df)
+
+    print(describe_df.to_string())
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
