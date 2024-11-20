@@ -135,6 +135,7 @@ def z_score(col, mean, std):
 def	normalize(dataset):
     numeric_cols = dataset.select_dtypes(include=['number']).columns.drop(['Index'])
     normalized_df = pd.DataFrame()
+
     for column in numeric_cols:
         column_data = dataset[column]
 

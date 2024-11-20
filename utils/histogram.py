@@ -72,7 +72,6 @@ def clean_data(data):
     sanitized: A DataFrame containing the cleaned dataset.
     '''
     numeric_cols = data.select_dtypes(include=['number']).columns.drop(['Index'])
-    print(numeric_cols)
     normalized_data = pd.DataFrame()
     for column in numeric_cols:
         column_data = data[column]
