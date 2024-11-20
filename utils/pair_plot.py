@@ -16,33 +16,23 @@ def get_colors(houses):
 			colors.append('orange')
 	return colors
 
-def display_KDE_graph(ax, data):
-	# data = {
-	# 	"Feature 1": np.random.normal(0, 1, 1000),
-	# 	"Feature 2": np.random.normal(2, 1.5, 1000),
-	# 	"Feature 3": np.random.normal(-1, 0.5, 1000),
-	# }
+def display_KDE_graph(ax, data, feature_name):
+	ravenclaw = data[data['Hogwarts House'] == 'Ravenclaw'].iloc[:, 1].to_numpy()
+	slytherin = data[data['Hogwarts House'] == 'Slytherin'].iloc[:, 1].to_numpy()
+	gryffindor = data[data['Hogwarts House'] == 'Gryffindor'].iloc[:, 1].to_numpy()
+	hufflepuff = data[data['Hogwarts House'] == 'Hufflepuff'].iloc[:, 1].to_numpy()
 
-	test = [
-		data[data['Hogwarts House'] == 'Ravenclaw'].drop('Hogwarts House', axis=1).head(5),
-		data[data['Hogwarts House'] == 'Slytherin'].drop('Hogwarts House', axis=1).head(5),
-	]
-	
-	# Slytherin = data[data['Hogwarts House'] == 'Slytherin']
-	# Gryffindor = data[data['Hogwarts House'] == 'Gryffindor']
-	# Hufflepuff = data[data['Hogwarts House'] == 'Hufflepuff']
-
-	print(test)
-	# tips = sns.load_dataset("tips")
-	# print(tips)
-	# sns.kdeplot(test, fill=True, color="green", legend=False, ax=ax)
-	# sns.kdeplot(Ravenclaw, fill=True, color="green", ax=ax)
-	# sns.kdeplot(Slytherin, ax=ax, fill=True, color="red")
-	# sns.kdeplot(Gryffindor, ax=ax, fill=True, color="mangenta")
-	# sns.kdeplot(Hufflepuff, ax=ax, fill=True, color="orange")
+	sns.kdeplot(ravenclaw, fill=True, color="magenta", legend=False, ax=ax)
+	sns.kdeplot(slytherin, fill=True, color="cyan", legend=False, ax=ax)
+	sns.kdeplot(gryffindor, fill=True, color="black", legend=False, ax=ax)
+	sns.kdeplot(hufflepuff, fill=True, color="orange", legend=False, ax=ax)
 	
 	ax.spines['top'].set_visible(False)
 	ax.spines['right'].set_visible(False)
+	# ax.set_yticklabels([])
+	# ax.set_xticklabels([])
+	# ax.set_xlabel(feature_name[:4])
+	# ax.set_ylabel(feature_name[:4])
 
 
 def display_pair_graph(ax, data):
@@ -70,18 +60,21 @@ def main():
 	for feature_y in data.loc[:, 'Arithmancy':'Flying']:
 		for feature_x in data.loc[:, 'Arithmancy':'Flying']:
 			
-			if x == 0:
-				axs[y, x].set_ylabel(feature_y[:4])
-			elif x != 0:
-				axs[y, x].set_yticklabels([])
-			if y != 11:
-				axs[y, x].set_xticklabels([])  # Hide x-axis tick labels	
-			axs[y, x].set_xlabel(feature_x[:4])
-			
 			if feature_x == feature_y:
-				display_KDE_graph(axs[y, x], data[['Hogwarts House', feature_x]])
+				display_KDE_graph(axs[y, x], data[['Hogwarts House', feature_x]], feature_x)
 			else:
 				display_pair_graph(axs[y, x], data[['Hogwarts House', feature_x, feature_y]])
+
+			if x == 0: axs[y, x].set_ylabel(feature_y[:4])
+			else : axs[y, x].set_ylabel('')
+
+			# else:
+			# 	axs[y, x].set_yticklabels([])
+			# if y != 11:
+				# axs[y, x].set_xticklabels([])  # Hide x-axis tick labels	
+			axs[y, x].set_xticklabels([])  # Hide x-axis tick labels	
+			axs[y, x].set_yticklabels([])
+			axs[y, x].set_xlabel(feature_x[:4])
 			x += 1
 		x = 0
 		y += 1
@@ -92,9 +85,9 @@ def main():
 	manager = plt.get_current_fig_manager()
 	manager.full_screen_toggle()  # Toggle fullscreen
 	plt.show()
-	print("--------------------------------------------------------------------")
+	# print("--------------------------------------------------------------------")
 	# sns.pairplot(data, hue="Hogwarts House")
 	# plt.show()
 
 if __name__ == "__main__":
-    main()
+	main()
