@@ -2,6 +2,7 @@ import pandas as pd
 import utils_math as mt
 import seaborn as sns
 import matplotlib.pyplot as plt
+import numpy as np
 
 def fill_nan(arr):
     '''
@@ -16,9 +17,24 @@ def detect_outliers(df, threshold=2.5):
     '''
     Search for outliers in a z-score normalized DataFrame.
     '''
-    outliers = (df.abs() > threshold)
     
-    return outliers
+    lower_bound = []
+    upper_bound = []
+
+    for column in df:
+        lower_bound.append(mt.percentile_val(df[column], 0.05))
+        upper_bound.append(mt.percentile_val(df[column], 0.95))
+        
+    lower_bound = pd.Series(lower_bound, index=df.columns)
+    upper_bound = pd.Series(upper_bound, index=df.columns)
+    
+    for column in df.columns:
+        df[column] = df[column].apply(
+            lambda x: lower_bound[column] if x < lower_bound[column] else 
+                      (upper_bound[column] if x > upper_bound[column] else x)
+        )
+    
+    return df
     
 def visualize_outliers(df):
     '''
@@ -39,11 +55,11 @@ def	prepare_data():
 
     for column in curated_df:
         curated_df[column] = fill_nan(curated_df[column])
-    
-    outliers = detect_outliers(curated_df)
-    print(outliers.to_string())
-    visualize_outliers(curated_df.drop(columns=['Outlier'], errors='ignore'))
-    
+
+    curated_df = detect_outliers(curated_df)
+    print(curated_df.to_string())
+    # visualize_outliers(curated_df.drop(columns=['Outlier'], errors='ignore'))
+
     return curated_df
 
 def main():

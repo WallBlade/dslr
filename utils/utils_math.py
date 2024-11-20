@@ -125,6 +125,7 @@ def percentile_val(arr, perc) -> float:
     Returns:
     float: The value at the specified percentile.
     """
+    
     sorted_arr = np.sort(arr)
     index = int(len(sorted_arr) * perc)
     return float(sorted_arr[index])
