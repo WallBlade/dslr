@@ -57,7 +57,7 @@ def	prepare_data():
         curated_df[column] = fill_nan(curated_df[column])
 
     curated_df = detect_outliers(curated_df)
-    print(curated_df.to_string())
+    # print(curated_df.to_string())
     # visualize_outliers(curated_df.drop(columns=['Outlier'], errors='ignore'))
 
     return curated_df
