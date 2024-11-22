@@ -133,17 +133,14 @@ def percentile_val(arr, perc) -> float:
 def z_score(col, mean, std):
     return[((x - mean) / std) if pd.notna(x) else None for x in col]
 
-def	normalize(dataset):
-    numeric_cols = dataset.select_dtypes(include=['number']).columns.drop(['Index'])
-    normalized_df = pd.DataFrame()
-
-    for column in numeric_cols:
+def normalize(dataset):
+    normalized_df = dataset.copy()
+    
+    for column in dataset.columns:
         column_data = dataset[column]
-
         mean = mean_val(column_data)
         std = std_val(column_data)
-
-        normalized_column = z_score(column_data, mean, std)
-        normalized_df[column] = normalized_column
+        
+        normalized_df[column] = (column_data - mean) / std
     
     return normalized_df

@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import prepare_data as prd
 
 def get_colors(houses):
 	"""
@@ -70,9 +71,11 @@ def set_axis_settings(ax, feature_x, feature_y, x, y):
 def main():
 	# --- Retrieve dataset and setup basic variables --- #
 	np.set_printoptions(suppress=True)
-	data = pd.read_csv("datasets/dataset_train.csv")
-	data = data.drop('Defense Against the Dark Arts', axis=1)
-	size = 12
+	# data = pd.read_csv("datasets/dataset_train.csv")
+	# data = data.drop('Defense Against the Dark Arts', axis=1)
+	size = 10
+
+	data = prd.prepare_data()
 
 	# --- Display the pair plot --- #
 	fig, axs = plt.subplots(size, size, figsize=(16, 10))
@@ -80,8 +83,8 @@ def main():
 	x = 0
 
 	# --- Fill the axis with the pair/KDE graph --- #
-	for feature_y in data.loc[:, 'Arithmancy':'Flying']:
-		for feature_x in data.loc[:, 'Arithmancy':'Flying']:
+	for feature_y in data.loc[:, 'Astronomy':'Flying']:
+		for feature_x in data.loc[:, 'Astronomy':'Flying']:
 			if feature_x == feature_y:
 				display_KDE_graph(axs[y, x], data[['Hogwarts House', feature_x]])
 			else:
