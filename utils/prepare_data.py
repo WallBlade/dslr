@@ -15,38 +15,62 @@ def fill_nan(df):
 
         for house in house_means:
                 mask = (df['Hogwarts House'] == house) & (df[column].isna())
-                print(mask.to_string())
                 df.loc[mask, column] = house_means[house]
+
+def replace_outliers(arr, tolerance=2):
+    # Check if arr is empty
+    if len(arr) == 0:
+        return arr
+
+    lower_bound = mt.percentile_val(arr, 0.05)
+    upper_bound = mt.percentile_val(arr, 0.95)
+    mean = mt.mean_val(arr)
+
+    # Create a mask for values outside the tolerance range
+    mask = (arr >= tolerance) | (arr <= -tolerance)
+    arr_processed = arr.copy()
+
+    # Replace outliers with lower or upper bounds
+    arr_processed[mask & (arr >= tolerance)] = mean
+    arr_processed[mask & (arr <= -tolerance)] = mean
+    
+    return arr_processed
 
 def detect_outliers(df):
     '''
     Search for outliers in a z-score normalized DataFrame.
     '''
 
-    lower_bound = []
-    upper_bound = []
+    df_cleaned = df.copy()
 
-    for column in df:
-        lower_bound.append(mt.percentile_val(df[column], 0.02))
-        upper_bound.append(mt.percentile_val(df[column], 0.98))
+    for column in df.columns[1:]:
 
-    lower_bound = pd.Series(lower_bound, index=df.columns)
-    upper_bound = pd.Series(upper_bound, index=df.columns)
+        for house in ['Gryffindor', 'Hufflepuff', 'Ravenclaw', 'Slytherin']:
+            # Select house-specific column data
+            house_mask = df['Hogwarts House'] == house
+            house_column = df_cleaned.loc[house_mask, column]
+            
+            # Replace outliers for this house's column
+            df_cleaned.loc[house_mask, column] = replace_outliers(house_column)
 
-    for column in df.columns:
-        df[column] = df[column].apply(
-            lambda x: lower_bound[column] if x < lower_bound[column] else
-                      (upper_bound[column] if x > upper_bound[column] else x)
-        )
-
-    return df
+    return df_cleaned
     
-def visualize_outliers(df):
-    '''
-    Visualize outliers in a dataset with a boxplot
-    '''
-    sns.boxplot(data=df, orient='h')
-    plt.title("Boxplot to Identify Outliers")
+def visualize_outliers(original_df, processed_df):
+    plt.figure(figsize=(12, 6))
+    
+    # Plot each numeric column
+    for column in original_df.select_dtypes(include=['float64', 'int64']).columns:
+        plt.subplot(2, 1, 1)
+        plt.plot(original_df[column], label=f'{column} Original')
+        plt.title('Original Data')
+        plt.legend()
+        
+        plt.subplot(2, 1, 2)
+        plt.plot(processed_df[column], label=f'{column} Processed')
+        plt.title('Processed Data (Outliers Removed)')
+        plt.legend()
+    
+    plt.tight_layout()
     plt.show()
 
 def	prepare_data():
@@ -65,11 +89,11 @@ def	prepare_data():
     curated_df.insert(0, 'Hogwarts House', house_column, allow_duplicates=False)
 
     fill_nan(curated_df)
+    cleaned_df = detect_outliers(curated_df)
+    
+    # visualize_outliers(curated_df, cleaned_df)
 
-    # curated_df = detect_outliers(curated_df)
-    # visualize_outliers(curated_df.drop(columns=['Outlier'], errors='ignore'))
-    # print(curated_df.to_string())
-    return curated_df
+    return cleaned_df
 
 def main():
     prepare_data()
