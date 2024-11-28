@@ -6,6 +6,10 @@ import numpy as np
 import time
 import sys
 
+GREEN = "\033[32m"
+RED = "\033[31m"
+RESET = "\033[0m"
+
 def z_score(col, mean, std):
     return[((x - mean) / std) if pd.notna(x) else None for x in col]
 
@@ -44,7 +48,7 @@ def cost_function(thetas, X, y):
 def gradient(thetas, X, y):
 	m = X.shape[0]
 	sum = (1 / m) * X.T @ (hypothesis(thetas, X) - y)
-	return thetas - sum * 0.1
+	return sum
 	# print(thetas - learning_rate * sum)
 	# print(hypothesis(thetas, X) - y)
 	# print("-----------------")
@@ -63,17 +67,17 @@ def gradient(thetas, X, y):
 	# r = learning_rate * sum
 	# return thetas - r
 
-def gradient_descent(thetas, X, y, num_iters):
+def gradient_descent(thetas, X, y):
 	old_cost = cost_function(thetas, X, y)
 	i = 0
-	learning_rate = 0.1
-	# v = np.zeros_like(thetas)
+	learning_rate = 0.5
+	v = np.zeros_like(thetas)
 
-	while True:
-		thetas = gradient(thetas, X, y)
+	for i in range(100000):
+		grad = gradient(thetas, X, y)
+		thetas = thetas - learning_rate * grad
 		# v = 0.9 * v + (1 - 0.9) * grad
 		# thetas = thetas - learning_rate * v
-		# thetas = thetas - learning_rate * grad
 
 		new_cost = cost_function(thetas, X, y)
 		# print(f"New gradient: {thetas} new_cost: {new_cost} old_cost: {old_cost} at iteration {i}")
@@ -85,6 +89,21 @@ def gradient_descent(thetas, X, y, num_iters):
 		old_cost = new_cost
 		i += 1
 	return thetas
+
+def predict(thetas, X, df):
+	labels = ['setosa', 'versicolor', 'virginica']
+	for i, row in df.iterrows():
+		prob = np.array([
+			hypothesis(thetas[0], X[i]) * 100,
+			hypothesis(thetas[1], X[i]) * 100,
+			hypothesis(thetas[2], X[i]) * 100
+		])
+		index = np.argmax(prob)
+		if labels[index] == row['species']:
+			print(f"\033[32mspecie: {row['species']} prediction: {labels[index]} prob: {prob[index]}\033[0m")
+		else:
+			print(f"\033[31mspecie: {row['species']} prediction: {labels[index]} prob: {prob[index]}\033[0m")
+
 
 def main():
 	np.set_printoptions(suppress=True) # Suppress scientific notation
@@ -102,16 +121,16 @@ def main():
 	thetas = np.array([0, 0, 0, 0, 0])
 	X = n_df.iloc[:, :-1].values
 	labels = ['setosa', 'versicolor', 'virginica']
-
-	y = (n_df['species'] == 'versicolor').astype(int).values
-	start_time = time.time()
-	thetas = gradient_descent(thetas, X, y, 10000000)
-	print(thetas)
-
-# New gradient: [-7.19387122 -2.41904796  4.33654502 -6.9522864  -6.49201985] at iteration 199999
-
-	elapsed_time = time.time() - start_time
-	print(f"Temps d'exécution : {elapsed_time:.6f} secondes")
+	r = []
+	for label in labels:
+		y = (n_df['species'] == label).astype(int).values
+		# start_time = time.time()
+		thetas = gradient_descent(thetas, X, y)
+		r.append(thetas)
+		print(thetas)
+		# elapsed_time = time.time() - start_time
+		# print(f"Temps d'exécution : {elapsed_time:.6f} secondes")
+	predict(r, X, n_df)
 
 if __name__ == "__main__":
     main()
