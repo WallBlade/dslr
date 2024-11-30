@@ -28,6 +28,9 @@ def	describe(dataset_file):
     counts = []
     means = []
     stds = []
+    ranges = []
+    variances = []
+    null_percentages = []
     mins = []
     q25 = []
     q50 = []
@@ -40,9 +43,15 @@ def	describe(dataset_file):
         if len(column_data) == 0:
             continue
         
+				# Caculate the number of nan values in column
+        count_nan = numeric_df[column].isna().sum()
+
         counts.append(um.count_val(column_data))
         means.append(um.mean_val(column_data))
         stds.append(um.std_val(column_data))
+        ranges.append(um.max_val(column_data) - um.min_val(column_data))
+        variances.append(um.std_val(column_data) ** 2)
+        null_percentages.append(100 * count_nan / len(numeric_df[column]))
         mins.append(um.min_val(column_data))
         q25.append(um.percentile_val(column_data, 0.25))
         q50.append(um.percentile_val(column_data, 0.50))
@@ -55,6 +64,9 @@ def	describe(dataset_file):
         'count': counts,
         'mean': means,
         'std': stds,
+        'range': ranges,
+        'variance': variances,
+        'null %': null_percentages,
         'min': mins,
         '25%': q25,
         '50%': q50,
