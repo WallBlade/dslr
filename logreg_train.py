@@ -3,7 +3,6 @@ import utils.prepare_data as prep_d
 import pandas as pd
 import numpy as np
 import time
-import sys
 
 GREEN = "\033[32m"
 RED = "\033[31m"
@@ -39,42 +38,34 @@ def create_mini_batches(X, y, batch_size):
 
 def gradient(thetas, X, y):
 	m = X.shape[0]
-	sum = (1 / m) * X.T @ (hypothesis(thetas, X) - y)
-	return sum
+	return (1 / m) * X.T @ (hypothesis(thetas, X) - y)
 
 def gradient_descent(X, y):
-	thetas = np.zeros(11)
-	old_cost = float('inf')
+	thetas = np.zeros(X.shape[1])
 	learning_rate = 0.5
+	max_epoch = 1000
+	batch_size = 32
+	it = 0
 
-	for i in range(2000):
-		# new_cost = 0
-		mini_batches = create_mini_batches(X, y, 32)
+	for i in range(max_epoch):
+		mini_batches = create_mini_batches(X, y, batch_size)
 		for X_mini, y_mini in mini_batches:
 			grad = gradient(thetas, X_mini, y_mini)
-			thetas = thetas - learning_rate * grad
-			# new_cost += cost_function(thetas, X_mini, y_mini)
-		# if new_cost > old_cost or abs(old_cost - new_cost) < sys.float_info.epsilon:
-		# 	print(f"TROUVÉ at iteration {i} old_cost: {old_cost} new_cost: {new_cost}")
-		# 	return thetas
-		# old_cost = new_cost
-
-	# for i in range(100000):
-	# 	grad = gradient(thetas, X, y)
-	# 	thetas = thetas - learning_rate * grad
-	# 	# new_cost = cost_function(thetas, X, y)
-	# 	# print(f"New gradient: {thetas} new_cost: {new_cost} old_cost: {old_cost} at iteration {i}")
-
-	# 	# if new_cost > old_cost or abs(old_cost - new_cost) < sys.float_info.epsilon:
-	# 	# 	print(f"TROUVÉ at iteration {i} old_cost: {old_cost} new_cost: {new_cost}")
-	# 	# 	break
-	
-	# 	# old_cost = new_cost
-	# 	# i += 1
+			new_thetas = thetas - learning_rate * grad
+			diff = abs(new_thetas - thetas)
+			if np.any(diff <= 10e-6):
+				print(f"Optimals thetas found at iteration {it}, ", end='')
+				return thetas
+			thetas = new_thetas
+			it += 1
 
 	return thetas
 
 def predict(thetas, X, df):
+	"""
+	Show predictions and errors on the dataset used to train the model
+	"""
+
 	labels = ['Gryffindor', 'Hufflepuff', 'Ravenclaw', 'Slytherin']
 	errors = 0
 
@@ -92,27 +83,40 @@ def predict(thetas, X, df):
 			errors += 1
 			print(f"\033[31mindex: {i} specie: {row['Hogwarts House']} prediction: {labels[index]} prob: {prob[index]}\033[0m")
 	
-	print(f"Errors: {errors} / {len(df)}")
+	print(f"Errors: {errors} / {len(df)} ({errors / len(df) * 100:.2f}%)")
 
 def main():
-	np.set_printoptions(suppress=True) # Suppress scientific notation
-	df = prep_d.prepare_data('datasets/dataset_train.csv')
-	df.insert(0, 'Bias', 1)
+	try:
+		# ---- Get and set up data ---- #
+		np.set_printoptions(suppress=True)
+		df = prep_d.prepare_data('datasets/dataset_train.csv')
+		df.insert(0, 'Bias', 1)
 
+		# ---- Set variables ---- #
+		X = df.select_dtypes(include=['number']).values
+		r = []
+		start_time = time.time()
 
-	X = df.select_dtypes(include=['number']).values
-	r = []
-	start_time = time.time()
+		# ---- Perform gradient descent for each class ---- #
+		for label in ['Gryffindor', 'Hufflepuff', 'Ravenclaw', 'Slytherin']:
+			y = (df['Hogwarts House'] == label).astype(int).values
+			thetas = gradient_descent(X, y)
+			r.append(thetas)
+			print(f"Thetas {label}: {thetas}")
+		
+		# ---- Print results ---- #
+		elapsed_time = time.time() - start_time
+		print(f"Temps d'exécution : {elapsed_time:.6f} secondes")
+		# predict(r, X, df)
 
-	for label in ['Gryffindor', 'Hufflepuff', 'Ravenclaw', 'Slytherin']:
-		y = (df['Hogwarts House'] == label).astype(int).values
-		thetas = gradient_descent(X, y)
-		r.append(thetas)
-		print(f"Thetas {label}: {thetas}")
-	
-	elapsed_time = time.time() - start_time
-	print(f"Temps d'exécution : {elapsed_time:.6f} secondes")
-	# predict(r, X, df)
+		# ---- Write results to file ---- #
+		with open('logistic_thetas.txt', 'w') as file:
+			for row in r:
+				row = map(str, row)
+				result = ' '.join(row)
+				file.write(result + '\n')
+	except Exception as e:
+		print(f"{RED}Error: {e}{RESET}")
 
 if __name__ == "__main__":
     main()
