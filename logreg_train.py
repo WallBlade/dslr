@@ -18,22 +18,22 @@ def cost_function(thetas, X, y):
 
 def create_mini_batches(X, y, batch_size):
     n_samples = X.shape[0]
-    
+
     # Shuffle indices
     indices = np.arange(n_samples)
     np.random.shuffle(indices)
-    
+
     # Shuffle the data
     X_shuffled = X[indices]
     y_shuffled = y[indices]
-    
+
     # Split into mini-batches
     mini_batches = []
     for i in range(0, n_samples, batch_size):
         X_batch = X_shuffled[i:i + batch_size]
         y_batch = y_shuffled[i:i + batch_size]
         mini_batches.append((X_batch, y_batch))
-    
+
     return mini_batches
 
 def gradient(thetas, X, y):
@@ -42,7 +42,9 @@ def gradient(thetas, X, y):
 
 def gradient_descent(X, y):
 	thetas = np.zeros(X.shape[1])
-	learning_rate = 0.5
+	velocity = np.zeros(X.shape[1])
+	momentum = 0.9
+	learning_rate = 0.1
 	max_epoch = 1000
 	batch_size = 32
 	it = 0
@@ -52,10 +54,12 @@ def gradient_descent(X, y):
 		for X_mini, y_mini in mini_batches:
 			grad = gradient(thetas, X_mini, y_mini)
 			new_thetas = thetas - learning_rate * grad
-			diff = abs(new_thetas - thetas)
-			if np.any(diff <= 10e-6):
-				print(f"Optimals thetas found at iteration {it}, ", end='')
-				return thetas
+			# velocity = momentum * velocity - learning_rate * grad
+			# new_thetas = thetas + velocity
+			# diff = abs(new_thetas - thetas)
+			# if np.any(diff <= 10e-6):
+			# 	print(f"Optimals thetas found at iteration {it}, ", end='')
+			# 	return thetas
 			thetas = new_thetas
 			it += 1
 
@@ -82,7 +86,7 @@ def predict(thetas, X, df):
 		else:
 			errors += 1
 			print(f"\033[31mindex: {i} specie: {row['Hogwarts House']} prediction: {labels[index]} prob: {prob[index]}\033[0m")
-	
+
 	print(f"Errors: {errors} / {len(df)} ({errors / len(df) * 100:.2f}%)")
 
 def main():
@@ -103,7 +107,7 @@ def main():
 			thetas = gradient_descent(X, y)
 			r.append(thetas)
 			print(f"Thetas {label}: {thetas}")
-		
+
 		# ---- Print results ---- #
 		elapsed_time = time.time() - start_time
 		print(f"Temps d'exécution : {elapsed_time:.6f} secondes")
