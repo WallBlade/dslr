@@ -10,8 +10,11 @@ def hypothesis(thetas, X):
 	return 1 / (1 + np.exp(-z))
 
 def predict(thetas, X, df):
+	"""
+	Calculate the predictions using one-vs-all logistic regression and print the results
+	"""
+
 	labels = ['Gryffindor', 'Hufflepuff', 'Ravenclaw', 'Slytherin']
-	errors = 0
 
 	for i, row in df.iterrows():
 		prob = np.array([
@@ -25,19 +28,22 @@ def predict(thetas, X, df):
 
 def main():
 	try:
-		np.set_printoptions(suppress=True) # Suppress scientific notation
+		# ---- Get and set up data ---- #
+		np.set_printoptions(suppress=True)
 		df = prep_d.prepare_data('datasets/dataset_test.csv')
 		df.insert(0, 'Bias', 1)
-
+		
 		X = df.select_dtypes(include=['number']).values
 		r = []
 
+		# ---- Get thetas from file ---- #
 		with open('logistic_thetas.txt', 'r') as file:
 			for line in file:
 				thetas = line.strip().split()
 				thetas = list(map(float, thetas))
 				r.append(list(map(float, line.strip().split())))
 
+		# ---- Perform the predictions ---- #
 		predict(r, X, df)
 	except Exception as e:
 		print(f"{RED}Error: {e}{RESET}")
