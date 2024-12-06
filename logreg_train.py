@@ -128,15 +128,9 @@ def gradient_descent(X, y, ax, label):
     return thetas
 
 def main():
-    usage = f'{RED}Usage: python logreg_train.py dataset_train.csv{RESET}'
-    if len(sys.argv) != 2:
-        print(usage)
+    if len(sys.argv) != 2 or sys.argv[1] != 'dataset_train.csv':
+        print(f'{RED}Usage: python3 logreg_predict.py dataset_train.csv{RESET}')
         sys.exit(1)
-    else:
-        data = sys.argv[1]
-        if data != 'datasets/dataset_train.csv':
-            print(usage)
-            sys.exit(1)
 
     try:
         # ---- Get and set up data ---- #

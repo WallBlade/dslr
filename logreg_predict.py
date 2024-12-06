@@ -2,6 +2,7 @@ import utils.prepare_data as prep_d
 import utils.utils_math as mt
 import pandas as pd
 import numpy as np
+import sys
 
 GREEN = "\033[32m"
 RED = "\033[31m"
@@ -47,15 +48,9 @@ def predict(thetas, X, df):
         print(f"{i},{labels[index]}")
 
 def main():
-    usage = f'{RED}Usage: python logreg_predict.py dataset_test.csv{RESET}'
-    if len(sys.argv) != 2:
-        print(usage)
+    if len(sys.argv) != 2 or sys.argv[1] != 'dataset_test.csv':
+        print(f'{RED}Usage: python3 logreg_predict.py dataset_test.csv{RESET}')
         sys.exit(1)
-    else:
-        data = sys.argv[1]
-        if data != 'datasets/dataset_test.csv':
-            print(usage)
-            sys.exit(1)
 
     try:
         # ---- Get and set up data ---- #
