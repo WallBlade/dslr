@@ -4,6 +4,10 @@ import mplcursors as mpl
 import matplotlib.pyplot as plt
 import utils_math as um
 
+GREEN = "\033[32m"
+RED = "\033[31m"
+RESET = "\033[0m"
+
 def min_max_normalize(column, range_min=0, range_max=1):
     min_val = column.min()
     max_val = column.max()
@@ -144,9 +148,15 @@ def draw_histograms(divergence, houses_scores):
 
     plt.show()
 
+def main():
+    try:
+        data = pd.read_csv('datasets/dataset_train.csv')
+        df = clean_data(data)
+        houses_scores = []
+        divergence = get_scores(df, houses_scores)
+        draw_histograms(divergence, houses_scores)
+    except Exception as e:
+        print(f"{RED}Error: {e}{RESET}")
+
 if __name__ == '__main__':
-    data = pd.read_csv('datasets/dataset_train.csv')
-    df = clean_data(data)
-    houses_scores = []
-    divergence = get_scores(df, houses_scores)
-    draw_histograms(divergence, houses_scores)
+    main()

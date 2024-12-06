@@ -67,7 +67,6 @@ def sum_val(arr) -> float:
     ret = 0
 
     for num in arr:
-        # Only add if `num` is a real number
         if pd.notna(num):
             ret += num
     return ret
@@ -121,7 +120,7 @@ def percentile_val(arr, perc) -> float:
     Parameters:
     arr (numpy.ndarray): The input array.
     perc (float): The percentile value between 0 and 1.
-    
+
     Returns:
     float: The value at the specified percentile.
     """
