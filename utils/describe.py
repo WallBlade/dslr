@@ -2,7 +2,11 @@ import utils_math as um
 import pandas as pd
 import sys
 
-def	describe(dataset_file):
+GREEN = "\033[32m"
+RED = "\033[31m"
+RESET = "\033[0m"
+
+def	describe(df):
     """
     Generates descriptive statistics for numeric columns in a CSV file.
 
@@ -19,7 +23,7 @@ def	describe(dataset_file):
                         (count, mean, std, min, 25%, 50%, 75%, max), and each column 
                         corresponds to a numeric column in the input data.
     """
-    df = pd.read_csv(dataset_file)
+
     df = df.dropna(axis=1, how='all')
 
     numeric_cols = df.select_dtypes(include=['number']).columns
@@ -76,11 +80,19 @@ def	describe(dataset_file):
 
     print(describe_df.to_string())
 
-if __name__ == '__main__':
+def main():
     if len(sys.argv) != 2:
-        print("Usage: python describe.py <dataset_file.csv>")
+        print(f"{RED}Usage: python describe.py <dataset_file.csv>{RESET}")
         sys.exit(1)
-    
-    dataset_file = sys.argv[1]
- 
-    describe(dataset_file)
+
+    pd.options.display.float_format = '{:.4f}'.format
+
+    try:
+        dataset_file = sys.argv[1]
+        df = pd.read_csv(dataset_file)
+        describe(df)
+    except Exception as e:
+        print(f"{RED}Error: {e}{RESET}")
+
+if __name__ == '__main__':
+    main()
