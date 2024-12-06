@@ -155,7 +155,7 @@ def main():
         i = 0
         for label in ['Gryffindor', 'Hufflepuff', 'Ravenclaw', 'Slytherin']:
             y = (df['Hogwarts House'] == label).astype(int).values
-            thetas = gradient_descent(X, y, axs[i // 2, i % 2], label)
+            thetas = gradient_descent(X, y, axs[i // 2][i % 2], label)
             r.append(thetas)
             print(f"Thetas {label}: {thetas}", end='\n\n')
             i += 1

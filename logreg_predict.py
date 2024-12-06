@@ -1,9 +1,25 @@
 import utils.prepare_data as prep_d
+import utils.utils_math as mt
+import pandas as pd
 import numpy as np
 
 GREEN = "\033[32m"
 RED = "\033[31m"
 RESET = "\033[0m"
+
+def fill_nan_with_mean(df):
+    """
+    Fills all NaN values the mean of their respective columns.
+    
+    Parameters: - df (pd.DataFrame): The input DataFrame
+    
+    Returns: pd.DataFrame: A new DataFrame with NaN values replaced by column means
+    """
+
+    column_means = df.mean(numeric_only=True)
+    filled_df = df.fillna(column_means)
+
+    return filled_df
 
 def hypothesis(thetas, X):
     z = X@thetas
@@ -44,9 +60,13 @@ def main():
     try:
         # ---- Get and set up data ---- #
         np.set_printoptions(suppress=True)
-        df = prep_d.prepare_data('datasets/dataset_test.csv')
+        df = pd.read_csv('datasets/dataset_test.csv')
+        df.drop(["Index", "Hogwarts House", "Best Hand", "First Name", "Last Name", "Birthday" ], axis=1, inplace=True)
+        df = df.drop(['Arithmancy', 'Defense Against the Dark Arts', 'Care of Magical Creatures'], axis=1)
+        df = fill_nan_with_mean(df)
+        df = mt.normalize(df)
         df.insert(0, 'Bias', 1)
-    
+
         X = df.select_dtypes(include=['number']).values
         r = []
 

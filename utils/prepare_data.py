@@ -3,55 +3,71 @@ import utils.utils_math as mt
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-def fill_nan(arr):
-    '''
-    Compute the mean of an array and replace its nan values with it.
-    '''
+def fill_nan(df):
+    for column in df.columns[1:]:
+        house_means = {
+            'Gryffindor': mt.mean_val(df[column][df['Hogwarts House'] == 'Gryffindor']),
+            'Hufflepuff': mt.mean_val(df[column][df['Hogwarts House'] == 'Hufflepuff']),
+            'Ravenclaw': mt.mean_val(df[column][df['Hogwarts House'] == 'Ravenclaw']),
+            'Slytherin': mt.mean_val(df[column][df['Hogwarts House'] == 'Slytherin'])
+        }
+
+        for house in house_means:
+                mask = (df['Hogwarts House'] == house) & (df[column].isna())
+                df.loc[mask, column] = house_means[house]
+
+def replace_outliers(arr, tolerance=2):
+    # Check if arr is empty
+    if len(arr) == 0:
+        return arr
+
     mean = mt.mean_val(arr)
-    clean_arr = arr.fillna(mean)
 
-    return clean_arr
+    # Create a mask for values outside the tolerance range
+    mask = (arr >= tolerance) | (arr <= -tolerance)
+    arr_processed = arr.copy()
 
-def detect_outliers(df, threshold=2.5):
+    # Replace outliers with lower or upper bounds
+    arr_processed[mask & (arr >= tolerance)] = mean
+    arr_processed[mask & (arr <= -tolerance)] = mean
+    
+    return arr_processed
+
+def detect_outliers(df):
     '''
     Search for outliers in a z-score normalized DataFrame.
     '''
-    outliers = (df.abs() > threshold)
-    
-    return outliers
-    
-def visualize_outliers(df):
-    '''
-    Visualize outliers in a dataset with a boxplot
-    '''
 
-    sns.boxplot(data=df, orient='h')
-    plt.title("Boxplot to Identify Outliers")
-    plt.show()
+    df_cleaned = df.copy()
 
-def	prepare_data(path):
+    for column in df.columns[1:]:
+
+        for house in ['Gryffindor', 'Hufflepuff', 'Ravenclaw', 'Slytherin']:
+            # Select house-specific column data
+            house_mask = df['Hogwarts House'] == house
+            house_column = df_cleaned.loc[house_mask, column]
+            
+            # Replace outliers for this house's column
+            df_cleaned.loc[house_mask, column] = replace_outliers(house_column)
+
+    return df_cleaned
+    
+def prepare_data(path):
     '''
     Prepare the dataset for model to train: normalize, treat nan values, drop
     useless features.
     '''
-
     df = pd.read_csv(path)
-    df.drop(["Index", "Best Hand", "First Name", "Last Name", "Birthday" ], axis=1, inplace=True)
+    
+    house_column = df['Hogwarts House']
     curated_df = df.drop(['Arithmancy', 'Defense Against the Dark Arts', 'Care of Magical Creatures'], axis=1)
-    curated_df = mt.normalize(curated_df)
+    
+    numeric_cols = curated_df.select_dtypes(include=['number']).drop('Index', axis=1)
+    
+    curated_df = mt.normalize(numeric_cols)
+    curated_df.insert(0, 'Hogwarts House', house_column, allow_duplicates=False)
 
-    for column in curated_df:
-        if pd.api.types.is_numeric_dtype(curated_df[column]):
-            curated_df[column] = fill_nan(curated_df[column])
-
-    # outliers = detect_outliers(curated_df)
-    # print(outliers.to_string())
-    # visualize_outliers(curated_df.drop(columns=['Outlier'], errors='ignore'))
-
+    fill_nan(curated_df)
+    curated_df = detect_outliers(curated_df)
+    
     return curated_df
-
-def main():
-    prepare_data()
-
-if __name__ == "__main__":
-    main()
