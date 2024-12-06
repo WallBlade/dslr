@@ -31,6 +31,16 @@ def predict(thetas, X, df):
         print(f"{i},{labels[index]}")
 
 def main():
+    usage = f'{RED}Usage: python logreg_predict.py dataset_test.csv{RESET}'
+    if len(sys.argv) != 2:
+        print(usage)
+        sys.exit(1)
+    else:
+        data = sys.argv[1]
+        if data != 'datasets/dataset_test.csv':
+            print(usage)
+            sys.exit(1)
+
     try:
         # ---- Get and set up data ---- #
         np.set_printoptions(suppress=True)

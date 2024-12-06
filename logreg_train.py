@@ -4,6 +4,7 @@ import utils.utils_math as mt
 import pandas as pd
 import numpy as np
 import time
+import sys
 
 GREEN = "\033[32m"
 RED = "\033[31m"
@@ -127,6 +128,16 @@ def gradient_descent(X, y, ax, label):
     return thetas
 
 def main():
+    usage = f'{RED}Usage: python logreg_train.py dataset_train.csv{RESET}'
+    if len(sys.argv) != 2:
+        print(usage)
+        sys.exit(1)
+    else:
+        data = sys.argv[1]
+        if data != 'datasets/dataset_train.csv':
+            print(usage)
+            sys.exit(1)
+
     try:
         # ---- Get and set up data ---- #
         np.set_printoptions(suppress=True)
@@ -152,7 +163,7 @@ def main():
         # ---- Print results ---- #
         elapsed_time = time.time() - start_time
         print(f"Temps d'exécution : {elapsed_time:.6f} secondes")
-        # predict(r, X, df)
+        predict(r, X, df)
 
         # ---- Write results to file ---- #
         with open('logistic_thetas.txt', 'w') as file:
