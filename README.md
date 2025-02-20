@@ -5,10 +5,10 @@ In this project, inspired by the world of Harry Potter, we took on the role of d
 Objectives: Learning the Fundamentals of Logistic Regression
 
 #### This assignment serves as an introduction to classification problems, focusing on:
-> - Data Exploration – Understanding, analyzing, and cleaning datasets.
-> - Data Visualization – Using histograms, scatter plots, and pair plots to identify patterns.
-> - Logistic Regression – Implementing a multi-class classification model using the one-vs-all strategy.
-> - Model Training & Prediction – Writing custom code to train a model using gradient descent and make predictions.
+- Data Exploration – Understanding, analyzing, and cleaning datasets.
+- Data Visualization – Using histograms, scatter plots, and pair plots to identify patterns.
+- Logistic Regression – Implementing a multi-class classification model using the one-vs-all strategy.
+- Model Training & Prediction – Writing custom code to train a model using gradient descent and make predictions.
 
 #### Core Tasks: Steps to Build the Sorting Algorithm
 ### 1. Data Analysis
